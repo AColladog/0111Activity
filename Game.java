@@ -1,3 +1,4 @@
+import java.util.Scanner;
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -34,33 +35,55 @@ public class Game
      */
     private void createRooms()
     {
-        Room conserjeria, cnp, profes, primero, segundo, fp2, fp1, bachiller1, bachiller2, patio;
+        Room[] habitaciones = new Room[10];
+        habitaciones[0] =  new Room("conserjeria"); //outside
+        habitaciones[1] =  new Room("comisaria");
+        habitaciones[2] =  new Room("profesores");
+        habitaciones[3] =  new Room("fp2");
+        habitaciones[4] =  new Room("fp1");
+        habitaciones[5] =  new Room("primero");
+        habitaciones[6] =  new Room("segundo");
+        habitaciones[7] =  new Room("bachiller1");
+        habitaciones[8] =  new Room("bachiller2");
+        habitaciones[9] =  new Room("patio");
 
-        // create the rooms
-        conserjeria = new Room("conserjeria"); //outside
-        cnp = new Room("comisaria"); //theater
-        profes = new Room("profesores"); //pub
-        fp2 = new Room("fp2");//lab
-        fp1 = new Room("fp1");
-        primero = new Room("primero");
-        segundo = new Room("segundo");
-        bachiller1 = new Room("bachiller1");
-        bachiller2 = new Room("bachiller2");
-        patio = new Room("patio");
+        Scanner teclado = new Scanner(System.in);
 
-        // initialise room exits
-        conserjeria.setExits(null,null, cnp, null, profes, null, patio, null);
-        cnp.setExits(conserjeria, null, null, null, null, null, null, null);
-        profes.setExits(primero, null, null,null, null, conserjeria, null, null);
-        primero.setExits(segundo, fp2, profes, bachiller2, null, null, null, null);
-        fp2.setExits(null, null, null, primero, null, null, null, null);
-        bachiller2.setExits(null, primero, null, null, null, null, null, null);
-        segundo.setExits(null, fp1, primero, bachiller1, null, null, null, null);
-        fp1.setExits(null, null, null, segundo, null, null, null, null);
-        bachiller1.setExits(null, segundo, null, null, null, null, null, null);
-        patio.setExits(null,null, null, null, null, null, null, conserjeria);
+        for(int i = 0; i<habitaciones.length;i++){
+            String respuesta = "";
 
-        currentRoom = cnp;  // start game outside
+            do{
+                String salidas = "Habitaciones disponibles: ";
+                //Posibles habitaciones
+                for(int k = 0; k<habitaciones.length;k++){                
+                    if(!(habitaciones[i].getDescription().equals(habitaciones[k].getDescription()))){
+                        salidas = salidas + habitaciones[k].getDescription() + " ";
+                    }
+                }
+                System.out.println("** " + salidas);                
+                System.out.println("Deme las salidas para " + habitaciones[i].getDescription()); 
+                String salida = teclado.nextLine();
+                Boolean existe = false;
+                Room roomExit = null;
+                //Buscamos la habitacion introducida
+                for(int j = 0; j<habitaciones.length;j++){                
+                    if(habitaciones[j].getDescription().equals(salida)){
+                        existe = true;
+                        roomExit = habitaciones[j];
+                    }
+                }    
+                
+                if (!existe){
+                    System.out.println("La salida introducida no existe");
+                }else{
+                    habitaciones[i].setExit(salida, roomExit);
+                }    
+                System.out.println("¿Quiere introducir otra salida? (si/no)");
+                respuesta = teclado.nextLine();
+            }while(respuesta.equals("si"));
+        }        
+        
+        currentRoom = habitaciones[1]; // start game outside
     }
 
     /**
@@ -158,7 +181,7 @@ public class Game
             currentRoom = nextRoom;
             printLocationInfo();
         }
-         
+
     }
 
     /** 
@@ -179,7 +202,7 @@ public class Game
 
     private void printLocationInfo(){
         System.out.println("You are " + currentRoom.getDescription());
-        
+
         System.out.println(currentRoom.getExitString());
     }
 }
